@@ -54,22 +54,3 @@ func (it *Iterator) Prev() (int,error) {
 	it.pointer=it.pointer.prev
 	return it.pointer.value,nil
 }
-
-func main() {
-	rq:=NewLinkedList(20)
-	for i:=0; i<10; i++ {
-		rq.AddBeg(i)
-		rq.AddEnd(i)
-	}
-	it:=rq.Iterator()
-	nextVal,err:=it.Next()
-	for err==nil {
-		fmt.Println(nextVal)
-		nextVal,err=it.Next()
-	}
-	nextVal,err=it.Prev()
-	for err==nil {
-		fmt.Println(nextVal)
-		nextVal,err=it.Prev()
-	}
-}
