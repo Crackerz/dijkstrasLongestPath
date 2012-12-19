@@ -1,56 +1,75 @@
 package main
 
 import "fmt"
+import "errors"
 
 type LinkedList struct {
-	First *Link
-	Last *Link
+	first *link
+	last *link
 }
 
-func (r *LinkedList) addEnd(val int) {
-	p:=Link{r.Last,nil,val}
-	r.Last.Next=&p
-	r.Last=&p
+func (r *LinkedList) AddEnd(val int) {
+	p:=link{r.last,nil,val}
+	r.last.next=&p
+	r.last=&p
 }
 
-func (r *LinkedList) addBeg(val int) {
-	fmt.Println("Adding ",val," to ", r.First)
-	p:=Link{nil,r.First,val}
-	r.First.Prev=&p
-	r.First=&p
+func (r *LinkedList) AddBeg(val int) {
+	p:=link{nil,r.first,val}
+	r.first.prev=&p
+	r.first=&p
 }
 
-func (r *LinkedList) iterator() Iterator {
-	return Iterator{&Link{nil,r.First,0}}
+func (r *LinkedList) Iterator() Iterator {
+	return Iterator{&link{nil,r.first,0}}
 }
 
-func newReadyQueue(firstVal int) LinkedList {
-	p:=Link{nil,nil,firstVal}
+func NewLinkedList(firstVal int) LinkedList {
+	p:=link{nil,nil,firstVal}
 	return LinkedList{&p,&p}
 }
 
-type Link struct {
-	Prev *Link
-	Next *Link
+type link struct {
+	prev *link
+	next *link
 	value int
 }
 
 type Iterator struct {
-	I *Link
+	pointer *link
 }
 
-func (it *Iterator) next() *Link {
-	if it.I==nil||it.I.Next==nil {
-		return nil
+func (it *Iterator) Next() (int, error) {
+	if it.pointer==nil||it.pointer.next==nil {
+		return 0,errors.New("Iterator: no next value")
 	}
-	it.I=it.I.Next
-	return it.I
+	it.pointer=it.pointer.next
+	return it.pointer.value, nil
 }
 
-func (it *Iterator) prev() *Link {
-	if it.I==nil||it.I.Prev==nil {
-		return nil
+func (it *Iterator) Prev() (int,error) {
+	if it.pointer==nil||it.pointer.prev==nil {
+		return 0,errors.New("Iterator: no next value")
 	}
-	it.I=it.I.Prev
-	return it.I
+	it.pointer=it.pointer.prev
+	return it.pointer.value,nil
+}
+
+func main() {
+	rq:=NewLinkedList(20)
+	for i:=0; i<10; i++ {
+		rq.AddBeg(i)
+		rq.AddEnd(i)
+	}
+	it:=rq.Iterator()
+	nextVal,err:=it.Next()
+	for err==nil {
+		fmt.Println(nextVal)
+		nextVal,err=it.Next()
+	}
+	nextVal,err=it.Prev()
+	for err==nil {
+		fmt.Println(nextVal)
+		nextVal,err=it.Prev()
+	}
 }
