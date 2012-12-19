@@ -1,6 +1,5 @@
 package main
 
-import "fmt"
 import "errors"
 
 type LinkedList struct {
@@ -21,7 +20,7 @@ func (r *LinkedList) AddEnd(val int) {
 
 //This function removes a node from the end of the list
 //returning its value upon successfully removing it
-func (r *LinkedList) RemoveEnd() int, error {
+func (r *LinkedList) RemoveEnd() (int, error) {
 	if r.last==nil {
 		return 0, errors.New("LinkedList: Nothing To Remove")
 	} else if r.last.prev==nil {
@@ -30,7 +29,7 @@ func (r *LinkedList) RemoveEnd() int, error {
 		r.last=nil
 		return val,nil
 	}
-	val:=last.value
+	val:=r.last.value
 	r.last=r.last.prev
 	r.last.next=nil
 	return val,nil
@@ -49,16 +48,16 @@ func (r *LinkedList) AddBeg(val int) {
 
 //This function removes a node from the end of the list
 //returning its value upon successfully removing it
-func (r *LinkedList) RemoveBeg() int, error {
+func (r *LinkedList) RemoveBeg() (int, error) {
 	if r.first==nil {
 		return 0,errors.New("LinkedList: Nothing To Remove")
 	} else if r.first.next==nil {
-		val:=first.value
+		val:=r.first.value
 		r.first=nil
 		r.last=nil
 		return val,nil
 	}
-	val:=first.value
+	val:=r.first.value
 	r.first=r.first.next
 	r.first.prev=nil
 	return val,nil
