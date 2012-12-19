@@ -19,17 +19,21 @@ func (r *LinkedList) AddEnd(val int) {
 	r.last=&p
 }
 
-func (r *LinkedList) RemoveEnd() error {
+//This function removes a node from the end of the list
+//returning its value upon successfully removing it
+func (r *LinkedList) RemoveEnd() int, error {
 	if r.last==nil {
-		return errors.New("LinkedList: Nothing To Remove")
+		return 0, errors.New("LinkedList: Nothing To Remove")
 	} else if r.last.prev==nil {
+		val:=r.last.value
 		r.first=nil
 		r.last=nil
-		return nil
+		return val,nil
 	}
+	val:=last.value
 	r.last=r.last.prev
 	r.last.next=nil
-	return nil
+	return val,nil
 }
 
 func (r *LinkedList) AddBeg(val int) {
@@ -43,17 +47,21 @@ func (r *LinkedList) AddBeg(val int) {
 	r.first=&p
 }
 
-func (r *LinkedList) RemoveBeg() error {
+//This function removes a node from the end of the list
+//returning its value upon successfully removing it
+func (r *LinkedList) RemoveBeg() int, error {
 	if r.first==nil {
-		return errors.New("LinkedList: Nothing To Remove")
+		return 0,errors.New("LinkedList: Nothing To Remove")
 	} else if r.first.next==nil {
+		val:=first.value
 		r.first=nil
 		r.last=nil
-		return nil
+		return val,nil
 	}
+	val:=first.value
 	r.first=r.first.next
 	r.first.prev=nil
-	return nil
+	return val,nil
 }
 
 func (r *LinkedList) Iterator() Iterator {
