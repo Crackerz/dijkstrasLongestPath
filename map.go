@@ -23,15 +23,12 @@ func (r *Dam) dijkstra() []int {
 		dist[u] = 0
 		fmt.Println("Root:", u)
 		for {
-			fmt.Println("Selected Node ",u)
 			//Get u's children
 			child:=r.getChildren(u)
-			fmt.Println("Node ",u,"'s children:",child)
 			childCount:=len(child)
 			for j:=0;j<childCount;j++ {
 				if(dist[child[j]]>dist[u]+uint64(r.Matrix[child[j]][u])) {
 					dist[child[j]]=dist[u]+uint64(r.Matrix[child[j]][u])
-					fmt.Println(child[j],"=",dist[u],"+",r.Matrix[child[j]][u],"=",dist[child[j]])
 				}
 			}
 			visited[u]=true
@@ -40,7 +37,7 @@ func (r *Dam) dijkstra() []int {
 				break
 			}
 		}
-		//fmt.Println(dist,visited)
+		fmt.Println(dist)
 	}
 	return nil
 }
