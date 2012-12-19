@@ -40,7 +40,7 @@ func (r *Dam) dijkstra() []int {
 				break
 			}
 		}
-		//fmt.Println(dist,visited)
+		fmt.Println(dist)
 	}
 	return nil
 }
