@@ -54,18 +54,3 @@ func (it *Iterator) prev() *Link {
 	it.I=it.I.Prev
 	return it.I
 }
-
-func main() {
-	count:=10
-	rq:=newReadyQueue(20)
-	for i:=count-1;i>=0;i-- {
-		rq.addBeg(i)
-		rq.addEnd(i)
-	}
-	it:=rq.iterator()
-	for i:=0; i<1; i++ {
-		for p:=it.next();p!=nil;p=it.next() {
-			fmt.Println(*p)
-		}
-	}
-}
