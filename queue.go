@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 type Queue struct {
 	list *LinkedList
 }
@@ -17,13 +15,4 @@ func (q *Queue) Push(val int) {
 
 func (q *Queue) Pop() (int,error) {
 	return q.list.RemoveBeg()
-}
-
-func main() {
-	q:=NewQueue(0)
-	for i:=1;i<10;i++ {
-		q.Push(i)
-		fmt.Println(q.Pop())
-	}
-	fmt.Println(q.Pop())
 }
