@@ -10,14 +10,50 @@ type LinkedList struct {
 
 func (r *LinkedList) AddEnd(val int) {
 	p:=link{r.last,nil,val}
+	if r.first==nil&&r.last==nil {
+		r.first=&p
+		r.last=&p
+		return
+	}
 	r.last.next=&p
 	r.last=&p
 }
 
+func (r *LinkedList) RemoveEnd() error {
+	if r.last==nil {
+		return errors.New("LinkedList: Nothing To Remove")
+	} else if r.last.prev==nil {
+		r.first=nil
+		r.last=nil
+		return nil
+	}
+	r.last=r.last.prev
+	r.last.next=nil
+	return nil
+}
+
 func (r *LinkedList) AddBeg(val int) {
 	p:=link{nil,r.first,val}
+	if r.first==nil&&r.last==nil {
+		r.first=&p
+		r.last=&p
+		return
+	}
 	r.first.prev=&p
 	r.first=&p
+}
+
+func (r *LinkedList) RemoveBeg() error {
+	if r.first==nil {
+		return errors.New("LinkedList: Nothing To Remove")
+	} else if r.first.next==nil {
+		r.first=nil
+		r.last=nil
+		return nil
+	}
+	r.first=r.first.next
+	r.first.prev=nil
+	return nil
 }
 
 func (r *LinkedList) Iterator() Iterator {
