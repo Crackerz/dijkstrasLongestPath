@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 func main() {
 	m:=Dam{
 		[][]int{
@@ -19,10 +17,5 @@ func main() {
 		[]int{00,00,00,00,00,00,00,00,00,00,23,00,00,00},//11
 		[]int{00,00,00,00,00,00,00,00,00,00,32,00,00,00},//12
 		[]int{00,00,00,00,00,00,00,00,00,00,00,00,00,00}}}
-	fmt.Println("Shortest Path");
-	fmt.Println("-------------------------------------");
-	m.DijkstraBF(true)
-	fmt.Println("Longest Path");
-	fmt.Println("-------------------------------------");
-	m.DijkstraBF(false)
+	m.Dijkstra()
 }

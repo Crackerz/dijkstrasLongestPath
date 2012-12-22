@@ -8,6 +8,13 @@ type Dam struct {
 	Matrix [][]int
 }
 
+func (r *Dam) printMatrix() {
+	length:=len(r.Matrix)
+	for i:=0;i<length;i++ {
+		fmt.Println(r.Matrix[i])
+	}
+}
+
 //Dijkstra's shortest path algorithm. I have implemented it
 //using a breadth first approach. The breadth first approach
 //enables the algorithm to be used on maps with negative
@@ -15,10 +22,14 @@ type Dam struct {
 //a slower approach but allows the algorithm to be applied
 //in more scenarios. The boolean indicates whether or not
 //Dijkstra is attempting to find a shortest or longest path.
-//(TRUE==Shortest Path, FALSE==Longest Path)
-func (r *Dam) Dijkstra(shortestPath bool) []int {
+func (r *Dam) Dijkstra() []int {
+	fmt.Println("Input")
+	r.printMatrix();
 	roots:=r.getRootNodes()
 	nodeCount:=len(roots)
+	var result []int
+	maxDist:=uint64(0)
+	fmt.Println("\n\nPossible Routes: \n")
 	for i:=0;i<nodeCount;i++ {
 		visited:=make([]bool,len(r.Matrix))
 		dist:=make([]uint64,len(r.Matrix))
@@ -29,32 +40,37 @@ func (r *Dam) Dijkstra(shortestPath bool) []int {
 		}
 		u,_:=nextCheck.Pop()
 		dist[u] = 0
+		visited[u] = true
 		fmt.Println("Root:", u)
 		for {
-			fmt.Println("Selected Node ",u)
 			//Get u's children
 			child:=r.getChildren(u)
-			fmt.Println("Node ",u,"'s children:",child)
 			childCount:=len(child)
 			for j:=0;j<childCount;j++ {
 				nextCheck.Push(child[j])
-				if((shortestPath&&dist[child[j]]>dist[u]+uint64(r.Matrix[child[j]][u]))||(!shortestPath&&(dist[child[j]]<dist[u]+uint64(r.Matrix[child[j]][u])||dist[child[j]]==MAXUINT64))) {
+				//if(dist[child[j]]>dist[u]+uint64(r.Matrix[child[j]][u]) { //shortest path
+				if(dist[child[j]]<dist[u]+uint64(r.Matrix[child[j]][u])||dist[child[j]]==MAXUINT64) { //longest path
 					dist[child[j]]=dist[u]+uint64(r.Matrix[child[j]][u])
-					fmt.Println(child[j],"=",dist[u],"+",r.Matrix[child[j]][u],"=",dist[child[j]])
 				}
 			}
 			visited[u]=true
-			u=r.getNextValue(nextCheck,visited)
+			u=getNextValue(nextCheck,visited)
 			if u==-1 {
 				break
 			}
 		}
-		fmt.Println(dist)
+		cp:=r.getCP(dist,visited)
+		fmt.Println("Local Critical Path:",cp," Distance:",dist[cp[len(cp)-1]],"\n")
+		if result==nil||dist[cp[len(cp)-1]]>maxDist {
+			result=cp
+		}
 	}
-	return nil
+
+	fmt.Println("\nOveral Critical Path: ",result);
+	return result
 }
 
-func (r *Dam) getNextValue(nextCheck Queue, visited []bool) int {
+func getNextValue(nextCheck Queue, visited []bool) int {
 	val,err:=-1,error(nil)
 	for {
 		val,err=nextCheck.Pop()
@@ -67,22 +83,8 @@ func (r *Dam) getNextValue(nextCheck Queue, visited []bool) int {
 	}
 	return val
 }
-func (r *Dam) getSmallestValue(dist []uint64, visited []bool) int {
-	values:=len(dist)
-	minValue:=MAXUINT64
-	index:=(-1)
-	for i:=0;i<values;i++ {
-		if !visited[i]&&dist[i]!=MAXUINT64 {
-			if(index==-1||minValue>dist[i]) {
-				minValue = dist[i]
-				index = i
-			}
-		}
-	}
-	return index
-}
 
-func (r *Dam) getChildren(u int) []int{
+func (r *Dam) getChildren(u int) []int {
 	values:=len(r.Matrix)
 	children:=make([]int, 0, values)
 	for i:=0;i<values;i++ {
@@ -93,6 +95,72 @@ func (r *Dam) getChildren(u int) []int{
 		}
 	}
 	return children
+}
+
+func (r *Dam) getParents(u int) []int {
+	values:=len(r.Matrix)
+	parents:=make([]int, 0, values)
+	for i:=0;i<values;i++ {
+		if r.Matrix[u][i]!=0 {
+			//We have found a child
+			parents=parents[:len(parents)+1]
+			parents[len(parents)-1]=i
+		}
+	}
+	return parents
+}
+
+//Find the longest set of nodes that can be traversed to get to
+//a node in a map.
+//Params:
+//dist = distance traversed to reach node.
+//visited = if the node has been visited.
+//Returns:
+//[]int the node ids along the critical path.
+func (r *Dam) getCP(dist []uint64, visited []bool) []int {
+	u:=getLargestValue(dist,visited)
+	if u==-1 {return nil}
+	vals:=len(dist)
+	path:=make([]int,vals)
+	pathLen:=1
+	path[vals-pathLen] = u
+	pathLen++
+	parents:=r.getParents(u)
+	for parents!=nil {
+		u=getLargestParent(parents,dist,visited)
+		if u==-1 {break}
+		path[vals-pathLen]=u
+		pathLen++
+		parents=r.getParents(u)
+	}
+	return path[vals-pathLen+1:]
+}
+
+func getLargestParent(index []int, dist []uint64, visited []bool) int {
+	values:=len(index)
+	result:=-1
+	maxVal:=uint64(0)
+	for i:=0;i<values;i++ {
+		if visited[index[i]]&&(result==-1||maxVal<dist[index[i]]) {
+			result=index[i]
+			maxVal=dist[index[i]]
+		}
+	}
+	return result
+}
+
+//Returns index of largest value
+func getLargestValue(dist []uint64, visited []bool) int {
+	nodes:=len(dist)
+	index:=-1
+	maxVal:=uint64(0)
+	for i:=0;i<nodes;i++ {
+		if visited[i]&&(index==-1||maxVal<dist[i]) {
+			maxVal=dist[i]
+			index=i
+		}
+	}
+	return index
 }
 
 func (r *Dam) getRootNodes() []int {
