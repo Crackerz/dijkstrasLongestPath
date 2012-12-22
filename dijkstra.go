@@ -10,9 +10,67 @@ type Dam struct {
 
 func (r *Dam) printMatrix() {
 	length:=len(r.Matrix)
+	maxVal:=r.getMaxVal()
+	digits:=getDigits(maxVal)
+	indexDigits:=getDigits(len(r.Matrix)-1)
+	if(indexDigits>digits) {digits=indexDigits} //make sure col widths allow for indexs
+	printIndex(length,indexDigits,digits)
 	for i:=0;i<length;i++ {
-		fmt.Println(r.Matrix[i])
+		printNumber(i,indexDigits)
+		fmt.Print(" [")
+		for j:=0;j<length;j++ {
+			if j!=0 {fmt.Print(",")}
+			printNumber(r.Matrix[i][j],digits)
+		}
+		fmt.Print("] ")
+		printNumber(i,indexDigits)
+		fmt.Print("\n")
 	}
+	printIndex(length,indexDigits,digits)
+}
+
+func printIndex(cols,w,colWidth int) {
+	for i:=0;i<w+2;i++ {
+		fmt.Print(" ")
+	}
+	for i:=0;i<cols;i++ {
+		digitWidth:=getDigits(i)
+		Lpad:=(colWidth-digitWidth)/2
+		Rpad:=(colWidth-digitWidth)-Lpad
+		for j:=0;j<Lpad;j++ {
+			fmt.Print(" ")
+		}
+		printNumber(i, digitWidth+Rpad)
+		fmt.Print(" ")
+	}
+	fmt.Print("\n")
+}
+
+func printNumber(val, digits int) {
+	padding:=digits-getDigits(val)
+	for i:=0;i<padding;i++ {
+		fmt.Print(" ")
+	}
+	fmt.Print(val)
+}
+func (r *Dam) getMaxVal() int {
+	maxVal:=-1
+	for i:=0;i<len(r.Matrix);i++ {
+		for j:=0;j<len(r.Matrix[i]);j++ {
+			if(r.Matrix[i][j]>maxVal) {maxVal=r.Matrix[i][j]}
+		}
+	}
+	return maxVal
+}
+
+func getDigits(val int) int {
+	if(val==0) {return 1}
+	digits:=0
+	for val>0 {
+		digits++
+		val/=10
+	}
+	return digits
 }
 
 //Dijkstra's shortest path algorithm. I have implemented it
